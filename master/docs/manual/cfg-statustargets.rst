@@ -495,6 +495,17 @@ Corresponding Apache configuration.
         RewriteRule ^.*$ https://%1/%2 [R,L]
     </Location>
 
+LDAP-based authentication
+############################################
+Example:
+.. code-block:: python
+
+    auth=LDAPAuth(server_uri='ldap://YOUR_LDAP_SERVER',
+        basedn='dc=example,dc=com',
+        binddn='DOMAIN\\BIND_USERNAME',#windows AD example
+        passwd='BIND_PASSWORD',
+        search='(sAMAccountName=%s)'),#windows AD example
+
 Logging configuration
 #####################
 
