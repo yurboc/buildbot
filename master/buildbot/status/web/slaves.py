@@ -115,7 +115,7 @@ class OneBuildSlaveResource(HtmlResource, BuildLineMixin):
 
         try:
             max_builds = int(request.args.get('numbuilds')[0])
-        except ValueError:
+        except (ValueError, TypeError):
             max_builds = 10
 
         recent_builds = []
