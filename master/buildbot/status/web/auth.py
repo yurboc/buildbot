@@ -241,6 +241,7 @@ class LDAPAuth(AuthBase):
             self.search_conn.unbind()
         # ldap v2 is outdated
         ldap.set_option(ldap.OPT_PROTOCOL_VERSION, ldap.VERSION3)
+        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         ldap.set_option(ldap.OPT_REFERRALS, 0)
         ldap.set_option(ldap.OPT_NETWORK_TIMEOUT, 10)
         # Connection used to locate the users in the LDAP DB.
