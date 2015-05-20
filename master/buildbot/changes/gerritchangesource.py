@@ -197,22 +197,6 @@ class GerritChangeSource(base.ChangeSource):
                 'category': event["type"],
                 'properties': properties})
 
-    def eventReceived_comment_added(self, properties, event):
-        if "approvals" in event:
-            allowers = []
-            deniers = []
-            for a in event["approvals"]:
-                if "Code-Review" in a["type"] and int(a["value"]) > 0:
-                    if "Buildbot_srr" not in event["author"]["username"]:
-                        allowers.append(event["author"]["username"])
-                if "Code-Review" in a["type"] and int(a["value"]) < 0:
-                    deniers.append(event["author"]["username"])
-            log.msg("allowers: '%s', sum: %d" % (','.join(allowers), len(allowers)))
-            log.msg("deniers: '%s', sum: %d" % (','.join(deniers), len(deniers)))
-            return None #(len(deniers) == 0 and len(allowers) >= 1)
-        log.msg("eventReceived_comment_added: passed")
-        return None
-
     def eventReceived_ref_updated(self, properties, event):
         ref = event["refUpdate"]
         author = "gerrit"
