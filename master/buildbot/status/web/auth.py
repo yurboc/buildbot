@@ -15,14 +15,14 @@
 
 import os
 
+from buildbot.process.users import users
 from buildbot.status.web.base import ActionResource
 from buildbot.status.web.base import HtmlResource
 from buildbot.status.web.base import path_to_authfail
+from twisted.python import log
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface import implements
-from buildbot.process.users import users
-from twisted.python import log
 
 
 class IAuth(Interface):
@@ -58,7 +58,7 @@ class AuthBase:
     def getUserInfo(self, user):
         """default dummy impl"""
         return dict(userName=user, fullName=user,
-            email=user + "@localhost", groups=[user])
+                    email=user + "@localhost", groups=[user])
 
 
 class BasicAuth(AuthBase):
@@ -219,6 +219,7 @@ class LDAPAuth(AuthBase):
     LDAP directory"""
 
     def __init__(self, server_uri, basedn, binddn="", passwd="",
+                 mail_domain="localhost",
                  search="(uid=%s)"):
         """Authenticate users against the LDAP server on C{host}.
 
@@ -228,6 +229,7 @@ class LDAPAuth(AuthBase):
         self.binddn = binddn
         self.passwd = passwd
         self.search = search
+        self.mail_domain = mail_domain
 
         self.search_conn = None
         # log.msg("ldap init")
@@ -308,6 +310,35 @@ class LDAPAuth(AuthBase):
             return False
         auth_conn.unbind()
         return True
+
+    def getUserInfo(self, user):
+        """get user info from LDAP"""
+        import ldap
+        # Search the username in the LDAP DB
+        try:
+            result = self.search_conn.search_s(self.basedn,
+                                               ldap.SCOPE_SUBTREE,
+                                               self.search % user,
+                                               ['objectclass'], 1)
+            log.msg("ldap result: %s, query: %s" % (result, self.search % user))
+        except ldap.SERVER_DOWN:
+            self.err = "LDAP server seems down (while obtain user name)"
+            log.msg(self.err)
+            return dict(userName=user, fullName=user,
+                        email=user + "@localhost", groups=[user])
+
+        # Make sure we found a single user in the LDAP DB
+        if not result or len(result) < 1:
+            self.err = "user not found in the LDAP DB"
+            log.msg(self.err)
+            return dict(userName=user, fullName=user,
+                        email=user + "@localhost", groups=[user])
+
+        ldap_username = result[0][0].split(',')[0][3:]
+        log.msg('detected user name = ' + ldap_username)
+
+        return dict(userName=user, fullName=ldap_username,
+                    email=user + "@" + self.mail_domain, groups=[user])
 
 
 class AuthFailResource(HtmlResource):
