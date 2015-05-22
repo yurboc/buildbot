@@ -40,6 +40,7 @@ class Authz(object):
         'cleanShutdown',
         'showUsersPage',
         'pauseSlave',
+        'showDownloadsPage',
     ]
 
     def __init__(self,
