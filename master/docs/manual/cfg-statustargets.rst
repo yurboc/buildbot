@@ -376,6 +376,9 @@ The actions are:
 ``showUsersPage``
     access to page displaying users in the database, see :ref:`User-Objects`
 
+``showDownloadsPage``
+    access to page displaying all uploaded files from buildslaves
+
 For each of these actions, you can configure buildbot to never allow the action, always allow the action, allow the action to any authenticated user, or check with a function of your creation to determine whether the action is OK (see below).
 
 This is all configured with the :class:`Authz` class::
