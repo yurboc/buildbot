@@ -5,7 +5,14 @@
 
 <div>
   <h1 style="display: inline;">Waterfall</h1>
-  <a style="float: right;" href="{{ help_url }}">waterfall help</a>
+  <div style="float: right;">
+    <a href="{{ help_url }}">waterfall help</a>
+    {% if no_reload_page %}
+    - <a href="{{ no_reload_page }}">no reload</a>
+    {% else %}
+    - <a href="{{ path_to_root }}waterfall?show_events=true&reload=60">default view</a>
+    {% endif %}
+  </div>
 </div>
 
 {% if tags|length > 1 %}
