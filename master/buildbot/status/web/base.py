@@ -256,6 +256,8 @@ class ContextMixin(AccessorMixin):
                     version=version,
                     time=time.strftime("%a %d %b %Y %H:%M:%S",
                                        time.localtime(util.now())),
+                    time_h_m=time.strftime("%H:%M",
+                                           time.localtime(util.now())),
                     tz=locale_tz,
                     metatags=[],
                     pageTitle=self.getPageTitle(request),
